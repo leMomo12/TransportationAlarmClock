@@ -60,7 +60,12 @@ fun SearchScreen(viewModel: MainViewModel, navController: NavController) {
                 },
                 trailingIcon = {
                     if (viewModel.googleSearchState.value.isNotBlank()) {
-                        Icon(Icons.Default.Close, contentDescription = "")
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "",
+                            modifier = Modifier.clickable {
+                                viewModel.setGoogleSearchState("")
+                            })
                     }
                 },
                 placeholder = {

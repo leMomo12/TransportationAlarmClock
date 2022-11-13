@@ -108,12 +108,8 @@ class MainViewModel @Inject constructor(
         when (response) {
             is Resource.Success -> {
                 response.data?.let { setPredictionsListState(value = it.predictions) }
-                predictionsListState.value.forEach {
-                    d("Predictions", "predictions: ${it.description}, place_id: ${it.place_id}")
-                }
             }
             else -> {
-                d("Predictions", "else block")
             }
         }
     }
@@ -123,9 +119,7 @@ class MainViewModel @Inject constructor(
         val lat = response.result.geometry.location.lat
         val lng = response.result.geometry.location.lng
         val latLng = LatLng(lat, lng)
-        d("LocationResponse", "lat: $lat, lng: $lng")
         setMarkerState(value = latLng)
-        delay(1000)
     }
 
 }

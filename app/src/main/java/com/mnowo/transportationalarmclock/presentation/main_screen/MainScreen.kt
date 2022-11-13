@@ -36,6 +36,7 @@ import com.mnowo.transportationalarmclock.domain.models.GooglePredictions
 import com.mnowo.transportationalarmclock.presentation.AlarmBottomSheet
 import com.mnowo.transportationalarmclock.presentation.util.Screen
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -49,37 +50,23 @@ fun MainScreen(
     context: Context,
     navController: NavController
 ) {
-
     val bottomState = rememberBottomSheetScaffoldState()
-    val markerState = viewModel.markerState.value?.let { MarkerState(position = it) }
     val coroutineScope = rememberCoroutineScope()
 
     val locationPermissionState =
         rememberPermissionState(permission = android.Manifest.permission.ACCESS_FINE_LOCATION)
 
-    val cameraPositionState = rememberCameraPositionState {
-        viewModel.markerState.value?.let { markerLatLng ->
-            position = CameraPosition.fromLatLngZoom(markerLatLng, 15f)
-        } ?: viewModel.locationFromGPS.value?.let { gpsLocation ->
-            position = CameraPosition.fromLatLngZoom(
-                LatLng(gpsLocation.latitude, gpsLocation.longitude),
-                15f
-            )
-            coroutineScope.launch {
-                animate(
-                    update = CameraUpdateFactory.newCameraPosition(
-                        CameraPosition(LatLng(gpsLocation.latitude, gpsLocation.longitude), 15f, 0f, 0f)
-                    ),
-                    durationMs = 1000
-                )
-            }
-        }
-
-    }
+    val cameraPositionState = rememberCameraPositionState()
 
     GPSPermission(locationPermissionState = locationPermissionState)
 
     LaunchedEffect(key1 = true) {
+        viewModel.markerState.value?.let {
+            delay(100)
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newCameraPosition(CameraPosition(it, 15f, 0f, 0f))
+            )
+        }
         getUserLocation(
             viewModel = viewModel,
             locationPermissionState = locationPermissionState,
@@ -129,11 +116,6 @@ fun MainScreen(
                                 tint = Color.Blue
                             )
                         },
-                        trailingIcon = {
-                            if (viewModel.googleSearchState.value.isNotBlank()) {
-                                Icon(Icons.Default.Close, contentDescription = "")
-                            }
-                        },
                         placeholder = {
                             Text(text = "Search in google maps")
                         },
@@ -156,7 +138,6 @@ fun MainScreen(
             }
         }
     }
-
 }
 
 @Composable
