@@ -15,6 +15,7 @@ import com.mnowo.transportationalarmclock.domain.use_case.CalculateDistanceUseCa
 import com.mnowo.transportationalarmclock.domain.use_case.GetPredictionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,7 +24,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val calculateDistanceUseCase: CalculateDistanceUseCase,
     private val alarmClockRepository: AlarmClockRepository
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val _mapPropertiesState =
         mutableStateOf<MapProperties>(value = MapProperties(isMyLocationEnabled = true))
@@ -79,15 +80,24 @@ class MainViewModel @Inject constructor(
     fun calculateDistanceLoop() = viewModelScope.launch(Dispatchers.IO) {
         while (isAlarmClockActive.value) {
             calculateDistance()
-            delay(10000)
+            setProgressIndicatorState(false)
+            delay(6000)
         }
+    }
+
+    private val _progressIndicatorState = mutableStateOf<Boolean>(false)
+    val progressIndicatorState: State<Boolean> = _progressIndicatorState
+
+    fun setProgressIndicatorState(value: Boolean) {
+        _progressIndicatorState.value = value
     }
 
     private suspend fun calculateDistance() {
         markerToLocation()?.let { markerLocation ->
             locationFromGPS.value?.let { userLocation ->
-                calculateDistanceUseCase.invoke(userLocation, markerLocation).collect() {
-                    setDistanceState(it)
+                calculateDistanceUseCase.invoke(userLocation, markerLocation).collect() { distance ->
+                    val distanceInKm = distance.div(1000)
+                    setDistanceState(distanceInKm)
                 }
             }
         }
@@ -114,12 +124,17 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getLocationFromPlaceId(placeId: String) = viewModelScope.launch(Dispatchers.IO) {
-        val response = alarmClockRepository.getPlaceIdDetails(placeId = placeId)
-        val lat = response.result.geometry.location.lat
-        val lng = response.result.geometry.location.lng
-        val latLng = LatLng(lat, lng)
-        setMarkerState(value = latLng)
+    fun getLocationFromPlaceId(placeId: String) = viewModelScope.launch {
+        val job = launch(Dispatchers.IO) {
+            val response = alarmClockRepository.getPlaceIdDetails(placeId = placeId)
+            val lat = response.result.geometry.location.lat
+            val lng = response.result.geometry.location.lng
+            val latLng = LatLng(lat, lng)
+            setMarkerState(value = latLng)
+        }
+        delay(10000)
+        job.cancelAndJoin()
     }
+
 
 }
