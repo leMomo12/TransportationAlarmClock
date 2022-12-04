@@ -81,7 +81,9 @@ fun MainScreen(
                     modifier = Modifier.fillMaxSize(),
                     properties = viewModel.mapPropertiesState.value,
                     onMapClick = {
-                        viewModel.setMarkerState(it)
+                        if (!viewModel.isAlarmClockActive.value && viewModel.mapsBounds.value == null) {
+                            viewModel.setMarkerState(it)
+                        }
                     },
                     uiSettings = MapUiSettings(
                         myLocationButtonEnabled = false,
@@ -91,6 +93,17 @@ fun MainScreen(
                 ) {
                     viewModel.markerState.value?.let { location ->
                         Marker(MarkerState(position = location))
+                    }
+                    viewModel.mapsBounds.value?.let {
+                        Polyline(
+                            points = listOf<LatLng>(
+                                viewModel.markerState.value!!,
+                                LatLng(
+                                    viewModel.locationFromGPS.value!!.latitude,
+                                    viewModel.locationFromGPS.value!!.longitude
+                                )
+                            )
+                        )
                     }
                 }
                 Column {
@@ -160,19 +173,13 @@ fun MainScreen(
                 ) {
                     BottomInformationPanel(
                         viewModel = viewModel,
+                        coroutineScope = coroutineScope,
+                        cameraState = cameraPositionState,
                         onAddAlarmClicked = {
-                            viewModel.setIsAlarmClockActive(true)
-                            viewModel.calculateDistanceLoop()
                             coroutineScope.launch {
-                                viewModel.locationFromGPS.value?.let { userLocation ->
-                                    moveCameraToUserLocation(
-                                        cameraState = cameraPositionState,
-                                        userLocation = LatLng(
-                                            userLocation.latitude,
-                                            userLocation.longitude
-                                        )
-                                    )
-                                }
+                                viewModel.calculateLatLngForLocationAndMarkerInView()
+                                delay(100)
+                                moveCameraToLocationAndMarkerInView(viewModel, cameraPositionState)
                             }
                         }
                     )
@@ -200,6 +207,17 @@ suspend fun moveCameraToUserLocation(
     )
 }
 
+suspend fun moveCameraToLocationAndMarkerInView(
+    viewModel: MainViewModel,
+    cameraState: CameraPositionState
+) {
+    viewModel.mapsBounds.value?.let { mapBounds ->
+        cameraState.animate(
+            update = CameraUpdateFactory.newLatLngBounds(mapBounds, 60)
+        )
+    }
+}
+
 @Composable
 fun PredictionsItem(item: GooglePredictions, viewModel: MainViewModel) {
     Row(
@@ -225,7 +243,12 @@ fun PredictionsItem(item: GooglePredictions, viewModel: MainViewModel) {
 }
 
 @Composable
-fun BottomInformationPanel(viewModel: MainViewModel, onAddAlarmClicked: () -> Unit) {
+fun BottomInformationPanel(
+    coroutineScope: CoroutineScope,
+    cameraState: CameraPositionState,
+    viewModel: MainViewModel,
+    onAddAlarmClicked: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -241,30 +264,130 @@ fun BottomInformationPanel(viewModel: MainViewModel, onAddAlarmClicked: () -> Un
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (viewModel.isAlarmClockActive.value) {
-                Text(
-                    text = "Your linear distance:",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.padding(vertical = 5.dp))
-                Text(text = "${viewModel.distanceState.value}km")
+                ActiveAlarmClockBottomInformationPanel(viewModel = viewModel)
+            } else if (viewModel.mapsBounds.value != null) {
+                MapBoundsBottomInformationPanel(onYesClicked = {
+
+                    viewModel.setIsAlarmClockActive(true)
+                    viewModel.calculateDistanceLoop()
+
+                    coroutineScope.launch {
+                        viewModel.locationFromGPS.value?.let { userLocation ->
+                            moveCameraToUserLocation(
+                                cameraState = cameraState,
+                                userLocation = LatLng(
+                                    userLocation.latitude,
+                                    userLocation.longitude
+                                )
+                            )
+                        }
+                    }
+                }, onCancelClicked = {
+                    viewModel.setMapsBounds(null)
+                })
             } else {
-                Button(
-                    onClick = { onAddAlarmClicked() },
-                    enabled = viewModel.markerState.value != null
-                ) {
-                    Text(
-                        text = "Add alarm"
-                    )
-                }
-                Spacer(modifier = Modifier.padding(vertical = 2.dp))
-                Text(
-                    text = "Add a marker first before adding a alarm clock",
-                    color = Color.Gray,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center
+                BasicBottomInformationPanel(
+                    onAddAlarmClicked = { onAddAlarmClicked() },
+                    viewModel = viewModel
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun BasicBottomInformationPanel(onAddAlarmClicked: () -> Unit, viewModel: MainViewModel) {
+    Button(
+        onClick = { onAddAlarmClicked() },
+        enabled = viewModel.markerState.value != null
+    ) {
+        Text(
+            text = "Add alarm"
+        )
+    }
+    Spacer(modifier = Modifier.padding(vertical = 2.dp))
+    Text(
+        text = "Add a marker first before adding a alarm clock",
+        color = Color.Gray,
+        fontSize = 12.sp,
+        textAlign = TextAlign.Center
+    )
+}
+
+@Composable
+fun MapBoundsBottomInformationPanel(onYesClicked: () -> Unit, onCancelClicked: () -> Unit) {
+    Text(text = "Are you sure to set a new alarm clock?")
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp), horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Button(onClick = { onYesClicked() }) {
+            Text(text = "Yes")
+        }
+        OutlinedButton(onClick = { onCancelClicked() }) {
+            Text(text = "Cancel")
+        }
+    }
+}
+
+@Composable
+fun ActiveAlarmClockBottomInformationPanel(viewModel: MainViewModel) {
+    Row(modifier = Modifier.fillMaxSize()) {
+        ActiveAlarmClockBottomInformationPanelDistance(weight = .6f, viewModel = viewModel)
+        ActiveAlarmClockBottomInformationPanelCancel(weight = .4f)
+    }
+}
+
+@Composable
+fun RowScope.ActiveAlarmClockBottomInformationPanelDistance(
+    weight: Float,
+    viewModel: MainViewModel
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
+            .weight(weight),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "linear distance:",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Gray
+        )
+        Spacer(modifier = Modifier.padding(vertical = 0.dp))
+        Text(text = "${viewModel.distanceState.value}km")
+    }
+}
+
+@Composable
+fun RowScope.ActiveAlarmClockBottomInformationPanelCancel(weight: Float) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .weight(weight),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Divider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(1.dp), color = Color.LightGray
+            )
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                OutlinedButton(onClick = { }) {
+                    Text(text = "cancel")
+                }
             }
         }
     }
@@ -283,7 +406,6 @@ fun MyLocationButton(onClick: () -> Unit) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            //modifier = Modifier.padding(2.dp)
         ) {
             Icon(Icons.Default.MyLocation, contentDescription = "", tint = Color.Gray)
         }

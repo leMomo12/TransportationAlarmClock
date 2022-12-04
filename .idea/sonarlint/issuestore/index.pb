@@ -56,7 +56,5 @@ Napp/src/main/java/com/mnowo/transportationalarmclock/domain/models/Resource.kt
 Sapp/src/main/java/com/mnowo/transportationalarmclock/presentation/ui/theme/Shape.kt,0\b\0be9e0cd3c7a968a958f2442112f10717aa9ce02
 Ç
 Rapp/src/main/java/com/mnowo/transportationalarmclock/presentation/ui/theme/Type.kt,2\6\26db0d301f6c47e9e10477a70eca31c774080674
-É
-Sapp/src/main/java/com/mnowo/transportationalarmclock/presentation/ui/theme/Theme.kt,c\7\c7a3816f43ad023229982ab7553cb147eeddc258
-É
-Sapp/src/main/java/com/mnowo/transportationalarmclock/presentation/ui/theme/Color.kt,a\5\a5711cdf239e066df2971b732e192d6caa32d43b
+è
+_app/src/main/java/com/mnowo/transportationalarmclock/presentation/search_screen/SearchScreen.kt,6\1\616c18995924fc7040943f82599ae7ecdfd6739e

@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.MapProperties
 import com.mnowo.transportationalarmclock.domain.models.GooglePredictions
 import com.mnowo.transportationalarmclock.domain.models.Resource
@@ -19,7 +20,6 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val calculateDistanceUseCase: CalculateDistanceUseCase,
@@ -75,6 +75,13 @@ class MainViewModel @Inject constructor(
 
     fun setPredictionsListState(value: ArrayList<GooglePredictions>) {
         _predictionsListState.value = value
+    }
+
+    private val _mapsBounds = mutableStateOf<LatLngBounds?>(null)
+    val mapsBounds: State<LatLngBounds?> = _mapsBounds
+
+    fun setMapsBounds(value: LatLngBounds?) {
+        _mapsBounds.value = value
     }
 
     fun calculateDistanceLoop() = viewModelScope.launch(Dispatchers.IO) {
@@ -136,5 +143,21 @@ class MainViewModel @Inject constructor(
         job.cancelAndJoin()
     }
 
+    fun calculateLatLngForLocationAndMarkerInView() = viewModelScope.launch(Dispatchers.IO) {
+        val builder = LatLngBounds.Builder()
+
+        locationFromGPS.value?.let { userLocation ->
+            markerState.value?.let { marker ->
+                val locationLatLng = LatLng(userLocation.latitude, userLocation.longitude)
+
+                builder.include(locationLatLng)
+                builder.include(marker)
+
+                val bounds = builder.build()
+                setMapsBounds(bounds)
+            }
+        }
+    }
 
 }
+

@@ -2,7 +2,7 @@ package com.mnowo.transportationalarmclock.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val lightPrimary = Color(102, 34, 238)
+val lightPrimary = Color.Gray
 val lightPrimaryVariant = Color(55, 0, 179)
 val lightSecondary = Color(3, 218, 198)
 val lightSecondaryVariant = Color(1, 135, 134)
