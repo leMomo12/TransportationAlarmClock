@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:name=".AlarmClockApplication"
@@ -28,7 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <service android:name=".domain.util.AlarmService" />
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCsZshxSPA7mVAZ3B5zX6FIB48bAmF2nMw"/>
     </application>
 

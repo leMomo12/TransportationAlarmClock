@@ -7,8 +7,6 @@ X
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
 \
 ,.idea/inspectionProfiles/Project_Default.xml,4\9\496a238a6afa168dbaf6efd37bb459331589579c
-@
-app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 >
 app/.gitignore,5\1\51e1c5d383dfaa35e0e7e5873a0a99355a86880f
 F
@@ -30,8 +28,6 @@ Mapp/src/main/java/com/mnowo/transportationalarmclock/AlarmClockApplication.kt,
 ^app/src/main/java/com/mnowo/transportationalarmclock/domain/repository/AlarmClockRepository.kt,0\2\0267000c01ce1e2596d93059edf8f26d2c2036d6
 ê
 `app/src/main/java/com/mnowo/transportationalarmclock/data/repository/AlarmClockRepositoryImpl.kt,9\d\9d1b472831206c9a4195426130a774b925600c4a
-P
- app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 t
 Dapp/src/main/java/com/mnowo/transportationalarmclock/di/AppModule.kt,4\4\44abdc41fe894d77ce7b4ea4d1ff06331134e77e
 Ü
@@ -46,8 +42,6 @@ Lapp/src/main/java/com/mnowo/transportationalarmclock/data/GooglePlacesApi.kt,a
 Zapp/src/main/java/com/mnowo/transportationalarmclock/domain/models/GooglePredictionTerm.kt,3\0\307f9ac38277cb5c2c672823adc7e492d14feb39
 É
 Sapp/src/main/java/com/mnowo/transportationalarmclock/domain/LocationProviderImpl.kt,e\b\ebb38046a5efbaa77d9a0ac5b5ab0d60a7458bf9
-Å
-Qapp/src/main/java/com/mnowo/transportationalarmclock/presentation/MainActivity.kt,d\b\db2fd4b2e1a5cfdf37de4977313d4a720694f52f
 Ö
 Uapp/src/main/java/com/mnowo/transportationalarmclock/domain/models/PlaceIdLocation.kt,8\6\86d85971050fe5a0b02b719113639efe229fce62
 ~
@@ -58,3 +52,17 @@ Sapp/src/main/java/com/mnowo/transportationalarmclock/presentation/ui/theme/Shap
 Rapp/src/main/java/com/mnowo/transportationalarmclock/presentation/ui/theme/Type.kt,2\6\26db0d301f6c47e9e10477a70eca31c774080674
 è
 _app/src/main/java/com/mnowo/transportationalarmclock/presentation/search_screen/SearchScreen.kt,6\1\616c18995924fc7040943f82599ae7ecdfd6739e
+É
+Sapp/src/main/java/com/mnowo/transportationalarmclock/presentation/ui/theme/Theme.kt,c\7\c7a3816f43ad023229982ab7553cb147eeddc258
+É
+Sapp/src/main/java/com/mnowo/transportationalarmclock/presentation/ui/theme/Color.kt,a\5\a5711cdf239e066df2971b732e192d6caa32d43b
+è
+_app/src/main/java/com/mnowo/transportationalarmclock/domain/models/GooglePredictionsResponse.kt,1\0\102ad67aa7dba3e42f6db1282a13a49dd5452e21
+á
+Wapp/src/main/java/com/mnowo/transportationalarmclock/domain/models/GooglePredictions.kt,f\5\f5d4e4be59efd6e4e5293c976a4f1fe905894cf5
+Ä
+Papp/src/main/java/com/mnowo/transportationalarmclock/presentation/util/Screen.kt,e\4\e4302bf3cc2b3e0694333dd5c65f45b56724bc73
+ê
+`app/src/main/java/com/mnowo/transportationalarmclock/domain/use_case/CalculateDistanceUseCase.kt,d\2\d26734d09c0c37de468f22c75d50ea75fe2e0c4b
+Ñ
+Tapp/src/main/java/com/mnowo/transportationalarmclock/presentation/util/Navigation.kt,8\0\80e2085d33f5ae5f60996cec942df810e9a2d3bd

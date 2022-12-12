@@ -3,7 +3,10 @@ package com.mnowo.transportationalarmclock.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
 import androidx.navigation.compose.rememberNavController
+import com.mnowo.transportationalarmclock.R
 import com.mnowo.transportationalarmclock.presentation.main_screen.MainScreen
 import com.mnowo.transportationalarmclock.presentation.ui.theme.TransportationAlarmClockTheme
 import com.mnowo.transportationalarmclock.presentation.util.Navigation
@@ -15,8 +18,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TransportationAlarmClockTheme {
-                val navHostController = rememberNavController()
-                Navigation(navHostController = navHostController, context = this)
+               val navHostController = rememberNavController()
+               Navigation(navHostController = navHostController, context = this)
             }
         }
     }

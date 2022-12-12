@@ -335,7 +335,9 @@ fun MapBoundsBottomInformationPanel(onYesClicked: () -> Unit, onCancelClicked: (
 fun ActiveAlarmClockBottomInformationPanel(viewModel: MainViewModel) {
     Row(modifier = Modifier.fillMaxSize()) {
         ActiveAlarmClockBottomInformationPanelDistance(weight = .6f, viewModel = viewModel)
-        ActiveAlarmClockBottomInformationPanelCancel(weight = .4f)
+        ActiveAlarmClockBottomInformationPanelCancel(weight = .4f, onCancelClicked = {
+            viewModel.cancelAlarmClock()
+        })
     }
 }
 
@@ -364,7 +366,10 @@ fun RowScope.ActiveAlarmClockBottomInformationPanelDistance(
 }
 
 @Composable
-fun RowScope.ActiveAlarmClockBottomInformationPanelCancel(weight: Float) {
+fun RowScope.ActiveAlarmClockBottomInformationPanelCancel(
+    weight: Float,
+    onCancelClicked: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -385,8 +390,8 @@ fun RowScope.ActiveAlarmClockBottomInformationPanelCancel(weight: Float) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                OutlinedButton(onClick = { }) {
-                    Text(text = "cancel")
+                OutlinedButton(onClick = { onCancelClicked() }) {
+                    Text(text = "Cancel")
                 }
             }
         }
