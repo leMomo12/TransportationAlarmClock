@@ -1,6 +1,7 @@
 package com.mnowo.transportationalarmclock.presentation.main_screen
 
 import android.content.Context
+import android.util.Log.d
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import com.mnowo.transportationalarmclock.domain.LocationProviderImpl
 import com.mnowo.transportationalarmclock.domain.models.GooglePredictions
+import com.mnowo.transportationalarmclock.domain.util.AlarmService
 import com.mnowo.transportationalarmclock.presentation.ui.theme.lightError
 import com.mnowo.transportationalarmclock.presentation.util.Screen
 import kotlinx.coroutines.CoroutineScope
@@ -114,34 +116,46 @@ fun MainScreen(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.Top
                     ) {
-                        OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Default.Search,
-                                    contentDescription = "",
-                                    tint = Color.Blue
-                                )
-                            },
-                            placeholder = {
-                                Text(text = "Search in google maps")
-                            },
-                            singleLine = true,
-                            maxLines = 1,
-                            shape = RoundedCornerShape(16.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 30.dp, end = 30.dp)
-                                .background(
-                                    color = Color(red = 255, green = 255, blue = 255, alpha = 245),
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .clickable {
-                                    navController.navigate(Screen.SearchScreen.route)
+
+                        if (!viewModel.isAlarmClockActive.value && viewModel.mapsBounds.value == null) {
+                            d(
+                                "MapBounds",
+                                "MapBounds: ${viewModel.mapsBounds.value.toString()} , alarmClock: ${viewModel.isAlarmClockActive.value}"
+                            )
+                            OutlinedTextField(
+                                value = "",
+                                onValueChange = {},
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        contentDescription = "",
+                                        tint = Color.Blue
+                                    )
                                 },
-                            enabled = false
-                        )
+                                placeholder = {
+                                    Text(text = "Search in google maps")
+                                },
+                                singleLine = true,
+                                maxLines = 1,
+                                shape = RoundedCornerShape(16.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 30.dp, end = 30.dp)
+                                    .background(
+                                        color = Color(
+                                            red = 255,
+                                            green = 255,
+                                            blue = 255,
+                                            alpha = 245
+                                        ),
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
+                                    .clickable {
+                                        navController.navigate(Screen.SearchScreen.route)
+                                    },
+                                enabled = false
+                            )
+                        }
                     }
                     Row(
                         modifier = Modifier

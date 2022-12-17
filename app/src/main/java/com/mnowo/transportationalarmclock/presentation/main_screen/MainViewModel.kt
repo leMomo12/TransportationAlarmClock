@@ -3,7 +3,6 @@ package com.mnowo.transportationalarmclock.presentation.main_screen
 import android.content.Context
 import android.location.Location
 import android.media.RingtoneManager
-import android.util.Log.d
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -16,6 +15,7 @@ import com.mnowo.transportationalarmclock.domain.models.Resource
 import com.mnowo.transportationalarmclock.domain.repository.AlarmClockRepository
 import com.mnowo.transportationalarmclock.domain.use_case.CalculateDistanceUseCase
 import com.mnowo.transportationalarmclock.domain.use_case.GetPredictionsUseCase
+import com.mnowo.transportationalarmclock.domain.util.AlarmService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -23,14 +23,15 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.round
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val calculateDistanceUseCase: CalculateDistanceUseCase,
     private val alarmClockRepository: AlarmClockRepository,
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
 ) : ViewModel() {
+
+    val alarmService: AlarmService = AlarmService()
 
     private val _mapPropertiesState =
         mutableStateOf<MapProperties>(value = MapProperties(isMyLocationEnabled = true))
@@ -110,7 +111,7 @@ class MainViewModel @Inject constructor(
             locationFromGPS.value?.let { userLocation ->
                 calculateDistanceUseCase.invoke(userLocation, markerLocation).collect() { distance ->
                     val distanceInKm = distance.div(1000)
-                    val roundDistance = "%.2f".format(distanceInKm)
+                    val roundDistance = "%.2f".format(distanceInKm).replace(",", ".")
                     setDistanceState(roundDistance.toFloat())
                 }
             }
@@ -133,8 +134,7 @@ class MainViewModel @Inject constructor(
             is Resource.Success -> {
                 response.data?.let { setPredictionsListState(value = it.predictions) }
             }
-            else -> {
-            }
+            else -> {}
         }
     }
 
@@ -170,20 +170,6 @@ class MainViewModel @Inject constructor(
         setIsAlarmClockActive(false)
         setDistanceState(null)
         setMapsBounds(null)
-    }
-
-    fun playRingtone() {
-        var alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-
-        if(alert == null) {
-            alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
-            if(alert == null) {
-                alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-            }
-        }
-        val ringtone = RingtoneManager.getRingtone(context, alert)
-        ringtone.play()
     }
 
 }

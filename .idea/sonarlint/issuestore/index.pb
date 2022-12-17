@@ -40,8 +40,6 @@ Gapp/src/test/java/com/mnowo/transportationalarmclock/ExampleUnitTest.kt,1\d\1d
 Lapp/src/main/java/com/mnowo/transportationalarmclock/data/GooglePlacesApi.kt,a\9\a96192f8fc8e9d5ebb944443cb7f3947b7ce26a3
 ä
 Zapp/src/main/java/com/mnowo/transportationalarmclock/domain/models/GooglePredictionTerm.kt,3\0\307f9ac38277cb5c2c672823adc7e492d14feb39
-É
-Sapp/src/main/java/com/mnowo/transportationalarmclock/domain/LocationProviderImpl.kt,e\b\ebb38046a5efbaa77d9a0ac5b5ab0d60a7458bf9
 Ö
 Uapp/src/main/java/com/mnowo/transportationalarmclock/domain/models/PlaceIdLocation.kt,8\6\86d85971050fe5a0b02b719113639efe229fce62
 ~
@@ -62,7 +60,11 @@ _app/src/main/java/com/mnowo/transportationalarmclock/domain/models/GooglePredic
 Wapp/src/main/java/com/mnowo/transportationalarmclock/domain/models/GooglePredictions.kt,f\5\f5d4e4be59efd6e4e5293c976a4f1fe905894cf5
 Ä
 Papp/src/main/java/com/mnowo/transportationalarmclock/presentation/util/Screen.kt,e\4\e4302bf3cc2b3e0694333dd5c65f45b56724bc73
-ê
-`app/src/main/java/com/mnowo/transportationalarmclock/domain/use_case/CalculateDistanceUseCase.kt,d\2\d26734d09c0c37de468f22c75d50ea75fe2e0c4b
 Ñ
 Tapp/src/main/java/com/mnowo/transportationalarmclock/presentation/util/Navigation.kt,8\0\80e2085d33f5ae5f60996cec942df810e9a2d3bd
+@
+app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
+Å
+Qapp/src/main/java/com/mnowo/transportationalarmclock/presentation/MainActivity.kt,d\b\db2fd4b2e1a5cfdf37de4977313d4a720694f52f
+P
+ app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e

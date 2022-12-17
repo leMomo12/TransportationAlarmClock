@@ -5,33 +5,81 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.location.Location
+import android.media.MediaPlayer
+import android.media.RingtoneManager
+import android.os.Build
 import android.os.IBinder
-import android.util.Log.d
-import androidx.lifecycle.LifecycleCoroutineScope
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import androidx.core.app.NotificationCompat
+import com.google.android.gms.maps.model.LatLng
+import com.mnowo.transportationalarmclock.R
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 class AlarmService @Inject constructor() :
     Service() {
+
+    var userLocation: Location? = null
+    var targetLocation: Location? = null
+
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
+        var distance: Float? = null
 
-        val CHANNEL_ID = "Foreground Alarm Service ID"
+        userLocation?.let { userLoc ->
+            targetLocation?.let { targetLoc ->
+                distance = userLoc.distanceTo(targetLoc)
+            }
+        }
 
-        //val channel: NotificationChannel =
-        //    NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_HIGH)
+        distance?.let { distance ->
+            if (distance <= 1000) {
+                // Wake the user up
+                playRingtone()
 
-        //startForeground(1001, channel)
+                // Show an alarm notification
+                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val notificationId = 1
+                val channelId = "alarm_channel"
+                val channelName = "Alarm Channel"
+                val importance = NotificationManager.IMPORTANCE_HIGH
+
+                val notification = NotificationCompat.Builder(this, channelId)
+                    .setSmallIcon(R.drawable.ic_alarm_on)
+                    .setContentTitle("Alarm")
+                    .setContentText("Wake up!")
+                    .setAutoCancel(true)
+                    .build()
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val channel = NotificationChannel(channelId, channelName, importance)
+                    notificationManager.createNotificationChannel(channel)
+                }
+                notificationManager.notify(notificationId, notification)
+
+            }
+        }
 
         return super.onStartCommand(intent, flags, startId)
     }
+
+    private fun playRingtone() {
+        var alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+
+        if(alert == null) {
+            alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+            if(alert == null) {
+                alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+            }
+        }
+        val ringtone = RingtoneManager.getRingtone(this, alert)
+        ringtone.play()
+    }
+
+
+
 }
